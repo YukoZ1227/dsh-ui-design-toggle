@@ -25,7 +25,7 @@
 ### 方式一（推荐）：`dsh plugin` 命令
 
 ```bash
-dsh plugin --profile web add D:\APPS\Git\dsh-ui-design-toggle
+dsh plugin --profile web add <本仓库路径>
 ```
 
 `dsh plugin add` 会把本包安装为 profile 的 `file:` 依赖，并自动把
