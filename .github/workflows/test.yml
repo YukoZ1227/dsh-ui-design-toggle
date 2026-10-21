@@ -19,20 +19,29 @@ jobs:
       # whose runtime peers are shipped by the DSH installation. Install the
       # same package set a user's DSH install would supply, then point the test
       # at them via DSH_INSTALL.
+      #
+      # Install into an EMPTY package.json directory on purpose: this repo's
+      # root package.json declares those packages as peerDependencies, and
+      # `npm install <pkg>@<ver>` from the root directory under npm 10 skips
+      # specs that satisfy root peers (verified locally — only non-peer specs
+      # get installed). A clean prefix directory avoids that quirk.
       - name: Install DSH runtime packages (host-half peer deps)
-        run: >
-          npm install --no-save --legacy-peer-deps
-          @deepseek-ai/cordis@4.0.5
-          @deepseek-ai/dsh-skill@0.2.1-rc.2
-          @deepseek-ai/dsh-scope@0.2.1-rc.2
-          @deepseek-ai/dsh-util-values@0.2.1-rc.2
-          @deepseek-ai/schemastery@3.18.5
+        run: |
+          mkdir -p "$RUNNER_TEMP/dsh-deps"
+          cd "$RUNNER_TEMP/dsh-deps"
+          npm init -y > /dev/null
+          npm install --no-save --legacy-peer-deps \
+            @deepseek-ai/cordis@4.0.5 \
+            @deepseek-ai/dsh-skill@0.2.1-rc.2 \
+            @deepseek-ai/dsh-scope@0.2.1-rc.2 \
+            @deepseek-ai/dsh-util-values@0.2.1-rc.2 \
+            @deepseek-ai/schemastery@3.18.5
 
       - name: Syntax check
-        run: >
-          node --check lib/index.js &&
-          node --check lib/gate.js &&
+        run: |
+          node --check lib/index.js
+          node --check lib/gate.js
           node --check lib/client.js
 
       - name: Gate unit test (real SkillRegistry)
-        run: DSH_INSTALL="$GITHUB_WORKSPACE" node test/gate.test.mjs
+        run: DSH_INSTALL="$RUNNER_TEMP/dsh-deps" node test/gate.test.mjs
