@@ -109,18 +109,6 @@ notepad install.ps1   # 看一遍
 ./install.ps1
 ```
 
-### 方式五：源码安装（开发/改动时用）
-
-```bash
-git clone https://github.com/YukoZ1227/dsh-ui-design-toggle.git
-cd dsh-ui-design-toggle
-dsh plugin --profile web add .
-```
-
-> 💡 `dsh plugin` 对本地目录安装的是 `link:` 依赖：源码目录与 profile 中安装的副本是同一份；
-> 修改源码后重启服务即可生效（宿主模块默认不热重载）。
-> 代价是 profile 被重装/升级时这个 `link:` 可能失效，届时重新执行最后一条命令即可。
-
 ### 装完自检
 
 ```bash
@@ -150,58 +138,6 @@ dsh --profile web --dump-config | grep -A2 ui-design-toggle
     enabled: true          # 开关状态（默认 true）
 ```
 
-| 字段 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `skill` | string | `ui-ux-pro-max` | 要门控的技能名（kebab-case） |
-| `enabled` | boolean | `true` | `true` 时技能可用，`false` 时隐藏 |
-
-两个字段都是 `volatile()`，通过设置文档实时编辑；改动后宿主会重启该插件实例并重新装配门控（`Fiber.update()` → `restart()` → `apply()`）。
-
-## 目录结构
-
-```
-dsh-ui-design-toggle/
-├── package.json            # 包元数据 + dsh.bundle / dsh.client 清单
-├── cordis.patch.yml        # bundle 补丁：插入 ui-design-toggle 条目及默认配置
-├── lib/
-│   ├── index.js            # 宿主半：Config 定义、门控装配、隐藏自动设置页
-│   ├── gate.js             # 技能门控纯函数（可注入 SkillRegistry，便于测试）
-│   └── client.js           # 浏览器半：侧边栏开关组件（模块加载器格式）
-├── scripts/
-│   ├── install.ps1         # Windows 一键安装脚本
-│   └── install.sh          # macOS / Linux 一键安装脚本
-├── test/
-│   └── gate.test.mjs       # 门控单元测试（对真实 SkillRegistry 断言）
-├── .github/workflows/
-│   ├── test.yml            # CI：跑门控测试
-│   └── publish.yml         # CI：打 tag 时发布 npm + 上传 release tarball
-├── README.md               # 本文档
-├── README.en.md            # 英文说明（插件市场按界面语言展示）
-├── CHANGELOG.md            # 版本与兼容性记录
-├── CONTRIBUTING.md         # 贡献指南
-├── LICENSE                 # MIT 许可证
-└── .gitignore
-```
-
-### 关键约定
-
-- `lib/client.js` 以 `window.__ModuleLoader__.load({ id, factory })` 注册，`id` 必须与包名一致；
-- `cordis.patch.yml` 使用 `- insert:` 列表（bundle 补丁格式）；
-- 条目 `id`（`ui-design-toggle`）同时是浏览器半 `configForms.get()` 使用的设置命名空间。
-
-## 开发与测试
-
-```bash
-# 门控单元测试：对已安装 DSH 的真实 SkillRegistry 断言
-node test/gate.test.mjs
-# 或
-npm test
-```
-
-测试会从标准全局安装路径自动发现 `@deepseek-ai/dsh`；自定义安装位置时设置环境变量：
-
-```bash
-DSH_INSTALL=/path/to/@deepseek-ai/dsh npm test
 ```
 
 ## 兼容性
