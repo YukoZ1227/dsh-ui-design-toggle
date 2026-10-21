@@ -1,5 +1,7 @@
 # dsh-ui-design-toggle
 
+![test](https://github.com/YukoZ1227/dsh-ui-design-toggle/actions/workflows/test.yml/badge.svg)
+
 > DeepSeek Harness 插件：在侧边栏底部加一个开关，一键启用/停用 **ui-ux-pro-max** 设计技能。
 >
 > A DeepSeek Harness plugin that adds a sidebar switch to enable or disable the

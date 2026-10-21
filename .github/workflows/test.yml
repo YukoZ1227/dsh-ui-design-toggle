@@ -1,0 +1,38 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The gate test runs against the real `@deepseek-ai/dsh-skill` registry,
+      # whose runtime peers are shipped by the DSH installation. Install the
+      # same package set a user's DSH install would supply, then point the test
+      # at them via DSH_INSTALL.
+      - name: Install DSH runtime packages (host-half peer deps)
+        run: >
+          npm install --no-save --legacy-peer-deps
+          @deepseek-ai/cordis@4.0.5
+          @deepseek-ai/dsh-skill@0.2.1-rc.2
+          @deepseek-ai/dsh-scope@0.2.1-rc.2
+          @deepseek-ai/dsh-util-values@0.2.1-rc.2
+          @deepseek-ai/schemastery@3.18.5
+
+      - name: Syntax check
+        run: >
+          node --check lib/index.js &&
+          node --check lib/gate.js &&
+          node --check lib/client.js
+
+      - name: Gate unit test (real SkillRegistry)
+        run: DSH_INSTALL="$GITHUB_WORKSPACE" node test/gate.test.mjs
