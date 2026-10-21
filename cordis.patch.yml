@@ -1,0 +1,13 @@
+# dsh-ui-design-toggle bundle patch.
+#
+# `dsh plugin --profile <name> add <path-to-this-package>` appends this bundle to
+# `dsh.profile.bundles` automatically once the package declares
+# `dsh.bundle.patch` (see package.json). The entry below is inserted over the
+# profile root; the user patch layer (profile cordis.patch.yml) later writes the
+# same id to override `config` when the sidebar switch flips.
+- insert:
+    - id: ui-design-toggle
+      name: dsh-ui-design-toggle
+      config:
+        skill: ui-ux-pro-max
+        enabled: true

@@ -1,0 +1,54 @@
+{
+  "name": "dsh-ui-design-toggle",
+  "version": "0.2.0",
+  "description": "DSH plugin: a sidebar switch that enables/disables the ui-ux-pro-max UI design skill at runtime.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./gate": {
+      "default": "./lib/gate.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": []
+    }
+  },
+  "files": [
+    "lib/index.js",
+    "lib/gate.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.5",
+    "@deepseek-ai/dsh-skill": ">=0.2.1-rc.1",
+    "@deepseek-ai/schemastery": "~3.18.5"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "plugin",
+    "ui-ux-pro-max",
+    "skill"
+  ],
+  "scripts": {
+    "test": "node test/gate.test.mjs"
+  },
+  "license": "MIT"
+}
