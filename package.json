@@ -1,7 +1,7 @@
 {
   "name": "dsh-ui-design-toggle",
-  "version": "0.2.0",
-  "description": "DSH plugin: a sidebar switch that enables/disables the ui-ux-pro-max UI design skill at runtime.",
+  "version": "0.2.1",
+  "description": "DSH plugin: a sidebar switch that enables or disables the ui-ux-pro-max UI/UX design skill at runtime.",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -43,15 +43,36 @@
   "keywords": [
     "deepseek-harness",
     "dsh",
+    "dsh-plugin",
+    "dsh-plugin-market",
     "plugin",
+    "skill",
+    "skill-toggle",
+    "sidebar",
+    "ui",
     "ui-ux-pro-max",
-    "skill"
+    "design"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "dsh": ">=0.2.1-rc.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YukoZ1227/dsh-ui-design-toggle.git"
+  },
+  "homepage": "https://github.com/YukoZ1227/dsh-ui-design-toggle#readme",
+  "bugs": {
+    "url": "https://github.com/YukoZ1227/dsh-ui-design-toggle/issues"
+  },
+  "author": "YukoZ1227",
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
-    "test": "node test/gate.test.mjs"
+    "test": "node test/gate.test.mjs",
+    "prepack": "node --check lib/index.js && node --check lib/gate.js && node --check lib/client.js",
+    "release": "npm version patch && git push --follow-tags"
   },
   "license": "MIT"
 }

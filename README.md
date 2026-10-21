@@ -2,6 +2,8 @@
 
 ![test](https://github.com/YukoZ1227/dsh-ui-design-toggle/actions/workflows/test.yml/badge.svg)
 
+[English](README.en.md) | 中文
+
 > DeepSeek Harness 插件：在侧边栏底部加一个开关，一键启用/停用 **ui-ux-pro-max** 设计技能。
 >
 > A DeepSeek Harness plugin that adds a sidebar switch to enable or disable the
@@ -10,6 +12,18 @@
 **适配版本**：DSH `0.2.1-rc.2`（依赖 `@deepseek-ai/cordis ~4.0.5`、`@deepseek-ai/dsh-skill 0.2.1-rc.2`、`@deepseek-ai/schemastery ~3.18.5`）· **适用 profile**：`web`
 
 ---
+
+## 快速开始
+
+```bash
+# 一条命令装好（需要已安装 dsh 与 pnpm）
+dsh plugin --profile web add dsh-ui-design-toggle
+```
+
+重启（或刷新）Web GUI，侧边栏底部就会出现「UI 设计技能」开关。
+
+不想碰终端？打开 Web GUI → 账号菜单 → **设置 → 插件市场**，搜 `dsh-ui-design-toggle` 点安装即可。
+其余装法（离线 tarball、一键脚本、源码）见[安装](#安装)。
 
 ## 功能特性
 
@@ -22,26 +36,99 @@
 
 ## 安装
 
-> 前置：DSH `0.2.1-rc.2` + 已存在 `web` profile + `pnpm` 在 PATH 中。
-
-### 方式一（推荐）：`dsh plugin` 命令
+**环境要求**（下面所有方式相同）：DSH `0.2.1-rc.2` 及以上 · `web` profile · `pnpm` 在 `PATH` 中。
 
 ```bash
-dsh plugin --profile web add <本仓库路径>
+dsh --version   # 应显示 0.2.1-rc.2 或更高
+pnpm -v         # 没有输出就先装：npm i -g pnpm
 ```
 
-`dsh plugin add` 会把本包安装为 profile 的 `file:` 依赖，并自动把
+| 方式 | 适合谁 | 需要敲命令 |
+| --- | --- | --- |
+| 一、插件市场一键安装 | 不想碰终端 | 否 |
+| 二、npm 一条命令 | 已经会用 dsh | 1 条 |
+| 三、预构建 tarball | npm 源不可用 / 要锁版本 / 内网分发 | 1 条 |
+| 四、一键安装脚本 | 想连版本检查也省掉 | 1 条 |
+| 五、源码安装 | 要改代码、提 PR | 3 条 |
+
+### 方式一：插件市场一键安装（最省事）
+
+1. 打开 Web GUI，点右上角账号菜单 → **设置 → 插件市场**（DSH `0.2.1` 起设置入口从侧边栏移到了账号菜单）。
+2. 搜索 `dsh-ui-design-toggle`，或翻到 **UI 增强** 分类。
+3. 点 **安装**，等进度条走完，刷新页面即可。
+
+市场会自己处理 pnpm、依赖和 `dsh.profile.bundles`，不需要你编辑任何配置文件。
+
+### 方式二：npm 一条命令
+
+```bash
+dsh plugin --profile web add dsh-ui-design-toggle
+```
+
+`dsh plugin add` 会把本包安装为 profile 的依赖，并自动把
 `dsh-ui-design-toggle` 追加到 `%DSH_HOME%/profiles/web/package.json` 的
 `dsh.profile.bundles`。重启 web 服务即生效。
 
-### 方式二：手动安装（无 pnpm 时）
+校验安装结果：
 
-1. 把本仓库目录复制到 `%DSH_HOME%/profiles/web/node_modules/dsh-ui-design-toggle`；
-2. 在 `%DSH_HOME%/profiles/web/package.json` 的 `dsh.profile.bundles` 末尾加入 `"dsh-ui-design-toggle"`；
-3. 重启 web 服务。
+```bash
+dsh --profile web --dump-config | grep -A2 ui-design-toggle
+```
 
-> 💡 注意：`dsh plugin` 安装的是 `link:` 依赖，源码目录与 profile 中安装的副本是同一份；
+### 方式三：预构建 tarball（不走 npm registry）
+
+适合 npm 源被墙、要固定某个版本，或内网分发：
+
+```bash
+dsh plugin --profile web add https://github.com/YukoZ1227/dsh-ui-design-toggle/releases/download/v0.2.1/dsh-ui-design-toggle-0.2.1.tgz
+```
+
+tarball 就是 `npm pack` 的产物，内容和 npm 包完全一致；不需要 clone，也不需要本地构建。
+
+### 方式四：一键安装脚本
+
+Windows（PowerShell 5.1+）：
+
+```powershell
+irm https://raw.githubusercontent.com/YukoZ1227/dsh-ui-design-toggle/main/scripts/install.ps1 | iex
+```
+
+macOS / Linux：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/YukoZ1227/dsh-ui-design-toggle/main/scripts/install.sh | bash
+```
+
+脚本会依次：检查 `dsh` 与 `pnpm` → 取最新 release 的 tarball → 调用
+`dsh plugin --profile <profile> add <tarball>` → 用 `--dump-config` 确认条目已写入。
+想先看再执行，就把管道去掉先下载：
+
+```powershell
+irm https://raw.githubusercontent.com/YukoZ1227/dsh-ui-design-toggle/main/scripts/install.ps1 -OutFile install.ps1
+notepad install.ps1   # 看一遍
+./install.ps1
+```
+
+### 方式五：源码安装（开发/改动时用）
+
+```bash
+git clone https://github.com/YukoZ1227/dsh-ui-design-toggle.git
+cd dsh-ui-design-toggle
+dsh plugin --profile web add .
+```
+
+> 💡 `dsh plugin` 对本地目录安装的是 `link:` 依赖：源码目录与 profile 中安装的副本是同一份；
 > 修改源码后重启服务即可生效（宿主模块默认不热重载）。
+> 代价是 profile 被重装/升级时这个 `link:` 可能失效，届时重新执行最后一条命令即可。
+
+### 装完自检
+
+```bash
+dsh --profile web --dump-config | grep -A2 ui-design-toggle
+```
+
+看到 `id: ui-design-toggle`、`name: dsh-ui-design-toggle` 与 `config:` 就说明装好了；
+打开 Web GUI，侧边栏底部出现「UI 设计技能」开关即安装成功。
 
 ## 使用
 
@@ -80,9 +167,16 @@ dsh-ui-design-toggle/
 │   ├── index.js            # 宿主半：Config 定义、门控装配、隐藏自动设置页
 │   ├── gate.js             # 技能门控纯函数（可注入 SkillRegistry，便于测试）
 │   └── client.js           # 浏览器半：侧边栏开关组件（模块加载器格式）
+├── scripts/
+│   ├── install.ps1         # Windows 一键安装脚本
+│   └── install.sh          # macOS / Linux 一键安装脚本
 ├── test/
 │   └── gate.test.mjs       # 门控单元测试（对真实 SkillRegistry 断言）
+├── .github/workflows/
+│   ├── test.yml            # CI：跑门控测试
+│   └── publish.yml         # CI：打 tag 时发布 npm + 上传 release tarball
 ├── README.md               # 本文档
+├── README.en.md            # 英文说明（插件市场按界面语言展示）
 ├── CHANGELOG.md            # 版本与兼容性记录
 ├── CONTRIBUTING.md         # 贡献指南
 ├── LICENSE                 # MIT 许可证
@@ -133,9 +227,12 @@ DSH_INSTALL=/path/to/@deepseek-ai/dsh npm test
 
 | 现象 | 原因与处理 |
 | --- | --- |
-| 升级 DSH 后开关消失 | DSH 升级/重装 profile 会清空 profile `node_modules`，插件包被移除而 `dsh.profile.bundles` 仍引用它。重新执行 `dsh plugin --profile web add <本仓库路径>` 即可。`dsh --profile web --dump-config` 中出现 `skipping profile bundle "dsh-ui-design-toggle"` 即为此情况 |
+| 升级 DSH 后开关消失 | DSH 升级/重装 profile 会清空 profile `node_modules`，插件包被移除而 `dsh.profile.bundles` 仍引用它。重新执行 `dsh plugin --profile web add dsh-ui-design-toggle`（源码安装则用 `add <本仓库路径>`）即可。`dsh --profile web --dump-config` 中出现 `skipping profile bundle "dsh-ui-design-toggle"` 即为此情况 |
+| 插件市场里搜不到本插件 | 市场只展示收录在 [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin) 精选列表里的插件。未收录时请改用上面的方式二/三/四，或到该列表提收录 PR |
+| `npm error 404`（方式二失败） | npm 上还没有这个包。先按方式五从源码安装，或在仓库里执行一次 `npm publish --access public` |
 | 启动报 `EADDRINUSE` | 旧 web 进程未退出（DSH 的 app 运行在子进程，需按进程树结束）：`netstat -ano \| findstr :<port>` 找到 PID 后 `taskkill /PID <pid> /T /F` |
 | 开关不显示 | 确认 profile 为 `web`（需要 `slots`、`configForms` 服务），并重启 web 服务 |
+| `npm i -g pnpm` 报权限错误（Windows） | 用 `corepack enable pnpm` 代替，或以管理员身份打开 PowerShell 再安装 |
 
 ## 许可证
 

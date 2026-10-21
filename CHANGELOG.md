@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.2.1 — 2026-10-21
+
+发布准备：让插件能「一条命令」装上，并具备进入 DSH 插件市场的元数据。
+
+### 新增
+
+- `scripts/install.ps1`（Windows PowerShell 5.1+）/ `scripts/install.sh`（macOS / Linux）一键安装：
+  检查 `dsh` 与 `pnpm` → 优先取最新 release 的 tarball → 失败自动回退 `github:` 源码安装 →
+  装完用 `dsh --profile <profile> --dump-config` 自检。
+- GitHub Actions `publish.yml`：推 `v*` tag 时自动 `npm publish --provenance`，并把
+  `npm pack` 产物挂到同一 Release（一键安装与 tarball 安装依赖它）。
+- `README.en.md`：英文说明，插件目录按界面语言展示中/英描述。
+
+### 变更
+
+- `package.json` 补齐发布元数据：`repository` / `homepage` / `bugs` / `author` /
+  `publishConfig`；`keywords` 增加 `dsh-plugin`、`dsh-plugin-market`、`sidebar`、`ui` 等检索词；
+  `engines` 增加 `dsh: ">=0.2.1-rc.1"`，供插件市场展示宿主兼容性。
+- README 安装章节重写为五档（插件市场 → npm → tarball → 一键脚本 → 源码），
+  补上「先取得仓库」「pnpm 怎么装」「装完怎么自检」三处缺失；
+  修正原文「安装为 `file:` 依赖」的事实错误（`dsh plugin` 装的是 `link:`）。
+
+### 说明
+
+- 本版本不修改插件运行时行为，`lib/` 与 `0.2.0` 一致。
+
 ## 0.2.0 — 2026-10-21
 
 DSH `0.2.1-rc.2` 兼容重建（打破性版本号提升，因插件从 0.1.x 的内部实现重建）。

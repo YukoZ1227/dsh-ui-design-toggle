@@ -1,0 +1,61 @@
+name: publish
+
+# 打 tag（如 v0.2.1）时：发布到 npm，并把 npm pack 的 tarball 挂到 GitHub Release。
+# 前置：仓库 Secrets 里配好 NPM_TOKEN（npmjs.com → Access Tokens → Automation）。
+#
+# 幂等：若该版本已在 npm 上（例如作者用 `npm publish --otp=<code>` 手动发过），
+# 发布步骤跳过而不是失败，Release 仍然会创建 —— 一键安装与 tarball 安装都依赖它。
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # gh release create
+  id-token: write   # npm --provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Check tag matches package.json version
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          TAG=${GITHUB_REF_NAME#v}
+          echo "package=$PKG tag=$TAG"
+          [ "$PKG" = "$TAG" ] || { echo "::error::tag $TAG != package.json $PKG"; exit 1; }
+
+      - name: Syntax check
+        run: |
+          node --check lib/index.js
+          node --check lib/gate.js
+          node --check lib/client.js
+
+      - name: Publish to npm (skipped when the version already exists)
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VER=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VER" version >/dev/null 2>&1; then
+            echo "::notice::$NAME@$VER is already on npm — skipping publish"
+          else
+            npm publish --access public --provenance
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build release tarball
+        run: |
+          mkdir -p dist
+          npm pack --pack-destination dist
+
+      - name: Create GitHub Release with tarball
+        run: gh release create "$GITHUB_REF_NAME" dist/*.tgz --title "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
