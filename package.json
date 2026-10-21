@@ -47,6 +47,9 @@
     "ui-ux-pro-max",
     "skill"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "node test/gate.test.mjs"
   },
