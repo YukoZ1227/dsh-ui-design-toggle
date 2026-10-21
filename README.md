@@ -139,7 +139,7 @@ dsh --profile web --dump-config | grep -A2 ui-design-toggle
 ```
 
 ```
-
+```
 ## 兼容性
 
 | DSH 版本 | 状态 |
@@ -183,3 +183,4 @@ dsh --profile web --dump-config | grep -A2 ui-design-toggle
 - 遵循「修复优先 → 可复现 → 最小改动 → 版本明确」；
 - 提交前必须在本机当前 DSH 版本中跑通 `npm test` 与 `dsh --profile web --dump-config`；
 - 破坏性变更需在 CHANGELOG 中明确标注。
+```
